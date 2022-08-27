@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<script>
+			function xmlrequest(url, onfinish) {
+				var request = new XMLHttpRequest();
+				request.onreadystatechange = function() {
+					if (this.readyState == 4 /*&& this.status == 200*/) {
+						if (onfinish != null) {
+							onfinish(this.responseText)
+						}
+					}
+				}
+				request.onerror = function() {
+					console.log("Error!")
+				}
+				request.open("GET", url, true);
+				request.send();
+			}
+			function search(texttoshow) {
+				var corsproxyurl = "https://simplecorsoverwrite.chowders.workers.dev/?"
+				//Feel free to use your own proxy!
+				xmlrequest(corsproxyurl + "https://www.google.com/complete/search?client=chrome-omni&gs_ri=chrome-ext-ansg&xssi=t&q=" + encodeURIComponent(texttoshow) + "", function(result){
+					json = JSON.parse(result.substring(4))
+					document.getElementById("autocomplete").innerHTML = ""
+					for (let i in json[1]) {
+						var resulta = document.createElement("A")
+						resulta.innerText = json[1][i]
+						resulta.href = "https://www.google.com/search?q=" + encodeURIComponent(json[1][i])
+						var brel = document.createElement("BR")
+						document.getElementById("autocomplete").appendChild(resulta)
+						document.getElementById("autocomplete").appendChild(brel)
+					}
+				})
+			}
+		</script>
+	</head>
+	<body>
+		<input placeholder="Search term here" oninput="search(this.value)" style="width: 100%; height: 10%; font-size: 200%; font-family: Arial;"></input>
+		<div id="autocomplete" style="font-size: 200%; font-family: Arial;">
+		</div>
+	</body>
+</html>
